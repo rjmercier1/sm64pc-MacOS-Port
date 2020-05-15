@@ -1,4 +1,5 @@
 #include "sm64.h"
+#include <strings.h>
 
 struct PCCLIOptions 
 {
