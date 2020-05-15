@@ -1,10 +1,11 @@
 #include "sm64.h"
-#include <string.h>
+#include "string.h"
 
 struct PCCLIOptions 
 {
 	u8 SkipIntro;
     u8 FullScreen;
+    char * ConfigFile;
 };
 
 extern struct PCCLIOptions gCLIOpts;

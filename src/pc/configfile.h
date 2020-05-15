@@ -3,7 +3,6 @@
 
 #include <stdbool.h>
 
-#define CONFIG_FILE "sm64config.txt"
 #define MAX_BINDS 3
 
 extern bool         configFullscreen;

@@ -14,6 +14,7 @@
 #include "game/game_init.h"
 #include "game/ingame_menu.h"
 #include "game/options_menu.h"
+#include "pc/cliopts.h"
 #include "pc/configfile.h"
 #include "pc/controller/controller_api.h"
 
@@ -362,7 +363,7 @@ void optmenu_toggle(void) {
         optmenu_open = 0;
         newcam_init_settings(); // load bettercam settings from config vars
         controller_reconfigure(); // rebind using new config values
-        configfile_save(CONFIG_FILE);
+        configfile_save(gCLIOpts.ConfigFile);
     }
 }
 
