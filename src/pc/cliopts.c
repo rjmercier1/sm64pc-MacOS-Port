@@ -24,7 +24,7 @@ void parse_cli_opts(int argc, char* argv[])
 			if (strncmp(argv[i], "--skip-intro", strlen("--skip-intro")) == 0) // Skip Peach Intro
 				gCLIOpts.SkipIntro = 1;
 
-            if (strncmp(argv[i], "--fullscreen", strlen("--skip-intro")) == 0) // Open game in fullscreen
+            		if (strncmp(argv[i], "--fullscreen", strlen("--fullscreen")) == 0) // Open game in fullscreen
 				gCLIOpts.FullScreen = 1;
 
 			if (strncmp(argv[i], "--configfile", strlen("--configfile")) == 0) // Checks for a custom config file
