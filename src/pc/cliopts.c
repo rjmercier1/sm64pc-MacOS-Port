@@ -6,6 +6,7 @@ void parse_cli_opts(int argc, char* argv[])
 {
 	// Initialize options with false values. 
 	gCLIOpts.SkipIntro = 0;
+	gCLIOpts.FullScreen = 0;
 
 	// Scan arguments for options
 	if (argc > 1)
