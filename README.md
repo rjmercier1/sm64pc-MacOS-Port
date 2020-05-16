@@ -1,4 +1,7 @@
 # sm64pc-testing
+
+This tree is now **deprecated**. For the most updated source code, please go to our nightly branch.
+
 OpenGL adaptation of [n64decomp/sm64](https://github.com/n64decomp/sm64). 
 
 Feel free to report bugs and contribute, but remember, there must be **no upload of any copyrighted asset**. 
