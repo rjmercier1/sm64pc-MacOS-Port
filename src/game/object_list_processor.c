@@ -1,4 +1,5 @@
 #include <ultra64.h>
+#include <stdlib.h>
 
 #include "sm64.h"
 #include "behavior_data.h"

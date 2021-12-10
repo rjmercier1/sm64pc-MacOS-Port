@@ -400,6 +400,9 @@ SOUND_OBJ_FILES := $(SOUND_BIN_DIR)/sound_data.ctl.o \
                    $(SOUND_BIN_DIR)/sequences.bin.o \
                    $(SOUND_BIN_DIR)/bank_sets.o
 
+bob: $(SOUND_SAMPLE_TABLES)
+	echo $(SOUND_SAMPLE_TABLES)
+
 # Object files
 O_FILES := $(foreach file,$(C_FILES),$(BUILD_DIR)/$(file:.c=.o)) \
            $(foreach file,$(CXX_FILES),$(BUILD_DIR)/$(file:.cpp=.o)) \
@@ -525,7 +528,7 @@ else ifeq ($(TARGET_RPI),1)
 LDFLAGS := $(OPT_FLAGS) -lm -lGLESv2 `$(SDLCONFIG) --libs` -no-pie
 else
 ifeq ($(OSX_BUILD),1)
-LDFLAGS := -lm -framework OpenGL `$(SDLCONFIG) --libs` -no-pie -lpthread `pkg-config --libs libusb-1.0 glfw3 glew`
+LDFLAGS := -lm -framework OpenGL `$(SDLCONFIG) --static-libs` -no-pie -lpthread `pkg-config --libs libusb-1.0` -lglew
 else
 LDFLAGS := $(BITS) -march=$(TARGET_ARCH) -lm -lGL `$(SDLCONFIG) --libs` -no-pie -lpthread
 endif
@@ -589,9 +592,11 @@ $(BUILD_DIR)/lib/bin/ipl3_font.bin: lib/ipl3_font.png
 $(BUILD_DIR)/src/game/camera.o: $(BUILD_DIR)/include/text_strings.h
 
 $(BUILD_DIR)/include/text_strings.h: include/text_strings.h.in
+	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi
 	$(TEXTCONV) charmap.txt $< $@
 
 $(BUILD_DIR)/include/text_menu_strings.h: include/text_menu_strings.h.in
+	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi
 	$(TEXTCONV) charmap_menu.txt $< $@
 
 ifeq ($(VERSION),eu)
@@ -620,11 +625,13 @@ endif
 endif
 
 $(BUILD_DIR)/text/%/define_courses.inc.c: text/define_courses.inc.c text/%/courses.h
-	$(CPP) $(VERSION_CFLAGS) $< -o $@ -I text/$*/
+	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi
+	$(CPP) $(VERSION_CFLAGS) -I $(BUILD_DIR)/text/$*/ -I text/$* - < $< > $@
 	$(TEXTCONV) charmap.txt $@ $@
 
-$(BUILD_DIR)/text/%/define_text.inc.c: text/define_text.inc.c text/%/courses.h text/%/dialogs.h
-	$(CPP) $(VERSION_CFLAGS) $< -o $@ -I text/$*/
+$(BUILD_DIR)/text/%/define_text.inc.c: text/define_text.inc.c text/%/courses.h text/%/dialogs.h $(BUILD_DIR)/text/%/define_courses.inc.c
+	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi
+	$(CPP) $(VERSION_CFLAGS) -I $(BUILD_DIR)/text/$*/ -I text/$* - < $< > $@
 	$(TEXTCONV) charmap.txt $@ $@
 
 ALL_DIRS := $(BUILD_DIR) $(addprefix $(BUILD_DIR)/,$(SRC_DIRS) $(ASM_DIRS) $(GODDARD_SRC_DIRS) $(ULTRA_SRC_DIRS) $(ULTRA_ASM_DIRS) $(ULTRA_BIN_DIRS) $(BIN_DIRS) $(TEXTURE_DIRS) $(TEXT_DIRS) $(SOUND_SAMPLE_DIRS) $(addprefix levels/,$(LEVEL_DIRS)) include) $(MIO0_DIR) $(addprefix $(MIO0_DIR)/,$(VERSION)) $(SOUND_BIN_DIR) $(SOUND_BIN_DIR)/sequences/$(VERSION)
@@ -653,18 +660,22 @@ endif
 
 # RGBA32, RGBA16, IA16, IA8, IA4, IA1, I8, I4
 $(BUILD_DIR)/%: %.png
+	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi
 	$(N64GRAPHICS) -i $@ -g $< -f $(lastword $(subst ., ,$@))
 
 $(BUILD_DIR)/%.inc.c: $(BUILD_DIR)/% %.png
+	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi
 	hexdump -v -e '1/1 "0x%X,"' $< > $@
 	echo >> $@
 
 # Color Index CI8
 $(BUILD_DIR)/%.ci8: %.ci8.png
+	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi
 	$(N64GRAPHICS_CI) -i $@ -g $< -f ci8
 
 # Color Index CI4
 $(BUILD_DIR)/%.ci4: %.ci4.png
+	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi
 	$(N64GRAPHICS_CI) -i $@ -g $< -f ci4
 
 ################################################################
@@ -673,6 +684,7 @@ $(BUILD_DIR)/%.ci4: %.ci4.png
 
 # PC Area
 $(BUILD_DIR)/%.table: %.aiff
+	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi
 	$(AIFF_EXTRACT_CODEBOOK) $< >$@
 
 $(BUILD_DIR)/%.aifc: $(BUILD_DIR)/%.table %.aiff
@@ -710,21 +722,25 @@ $(SOUND_BIN_DIR)/%.o: $(SOUND_BIN_DIR)/%.s
 
 
 $(SOUND_BIN_DIR)/sound_data.ctl.c: $(SOUND_BIN_DIR)/sound_data.ctl
+	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi
 	echo "unsigned char gSoundDataADSR[] = {" > $@
 	hexdump -v -e '1/1 "0x%X,"' $< >> $@
 	echo "};" >> $@
 
 $(SOUND_BIN_DIR)/sound_data.tbl.c: $(SOUND_BIN_DIR)/sound_data.tbl
+	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi
 	echo "unsigned char gSoundDataRaw[] = {" > $@
 	hexdump -v -e '1/1 "0x%X,"' $< >> $@
 	echo "};" >> $@
 
 $(SOUND_BIN_DIR)/sequences.bin.c: $(SOUND_BIN_DIR)/sequences.bin
+	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi
 	echo "unsigned char gMusicData[] = {" > $@
 	hexdump -v -e '1/1 "0x%X,"' $< >> $@
 	echo "};" >> $@
 
 $(SOUND_BIN_DIR)/bank_sets.c: $(SOUND_BIN_DIR)/bank_sets
+	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi
 	echo "unsigned char gBankSetsData[0x100] = {" > $@
 	hexdump -v -e '1/1 "0x%X,"' $< >> $@
 	echo "};" >> $@
@@ -732,7 +748,7 @@ $(SOUND_BIN_DIR)/bank_sets.c: $(SOUND_BIN_DIR)/bank_sets
 $(BUILD_DIR)/levels/scripts.o: $(BUILD_DIR)/include/level_headers.h
 
 $(BUILD_DIR)/include/level_headers.h: levels/level_headers.h.in
-	$(CPP) -I . levels/level_headers.h.in | $(PYTHON) tools/output_level_headers.py > $(BUILD_DIR)/include/level_headers.h
+	$(CPP) -I . - < levels/level_headers.h.in | $(PYTHON) tools/output_level_headers.py > $(BUILD_DIR)/include/level_headers.h
 
 $(BUILD_DIR)/assets/mario_anim_data.c: $(wildcard assets/anims/*.inc.c)
 	$(PYTHON) tools/mario_anims_converter.py > $@

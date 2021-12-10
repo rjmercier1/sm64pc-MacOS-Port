@@ -34,6 +34,8 @@ static const char *progname, *infilename;
 
 #define checked_fread(a, b, c, d) if (fread(a, b, c, d) != c) fail_parse("error parsing file")
 
+extern int vsnprintf(char * restrict str, size_t size, const char * restrict format, va_list ap);
+
 NORETURN
 void fail_parse(const char *fmt, ...)
 {

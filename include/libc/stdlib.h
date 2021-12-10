@@ -16,4 +16,6 @@ typedef struct ldiv_t
 lldiv_t lldiv(long long num, long long denom);
 ldiv_t ldiv(long num, long denom);
 
+extern void exit(int);
+
 #endif

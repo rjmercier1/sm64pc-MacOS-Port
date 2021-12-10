@@ -24,6 +24,7 @@
 #define GL_GLEXT_PROTOTYPES 1
 
 #ifdef OSX_BUILD
+#include <GL/glew.h>
 #include <SDL2/SDL_opengl.h>
 #else
 #include <SDL2/SDL_opengles2.h>
